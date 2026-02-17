@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C++ Mastery Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700;800&family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #070a0f;
+    --bg2: #0d1117;
+    --surface: #111823;
+    --surface2: #1a2332;
+    --border: #1e2d3d;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #a8ff3e;
+    --text: #c9d1d9;
+    --text-dim: #5a6a7a;
+    --text-bright: #f0f6fc;
+    --glow: 0 0 20px rgba(0,212,255,0.3);
+    --glow2: 0 0 20px rgba(255,107,53,0.3);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* NOISE TEXTURE OVERLAY */
+  body::before {
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none;
+    z-index:9999;
+    opacity:0.4;
+  }
+
+  /* HEADER */
+  .hero {
+    position: relative;
+    text-align: center;
+    padding: 80px 20px 60px;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content:'';
+    position:absolute;
+    top:-100px; left:50%;
+    transform:translateX(-50%);
+    width:700px; height:700px;
+    background: radial-gradient(ellipse, rgba(0,212,255,0.07) 0%, transparent 70%);
+    pointer-events:none;
+  }
+
+  .hero-tag {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.2s forwards;
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(70px, 14vw, 160px);
+    line-height: 0.9;
+    letter-spacing: 2px;
+    color: var(--text-bright);
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+
+  .hero h1 span {
+    color: var(--accent);
+    -webkit-text-stroke: 1px var(--accent);
+  }
+
+  .hero-sub {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 20px;
+    color: var(--text-dim);
+    margin-top: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Bebas Neue';
+    font-size: 36px;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  /* PROGRESS BAR */
+  .progress-bar-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(7,10,15,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .progress-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    transition: width 0.3s ease;
+    border-radius: 2px;
+  }
+
+  .progress-pct {
+    font-size: 12px;
+    color: var(--accent);
+    min-width: 40px;
+    text-align: right;
+  }
+
+  /* MAIN LAYOUT */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 100px;
+  }
+
+  /* PHASE SECTIONS */
+  .phase {
+    margin-bottom: 60px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .phase.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .phase-num {
+    font-family: 'Bebas Neue';
+    font-size: 80px;
+    line-height: 1;
+    color: var(--border);
+    user-select: none;
+  }
+
+  .phase-meta {
+    flex: 1;
+  }
+
+  .phase-level {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .phase-title {
+    font-family: 'Bebas Neue';
+    font-size: 42px;
+    letter-spacing: 1px;
+    color: var(--text-bright);
+    line-height: 1;
+  }
+
+  .phase-duration {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
+
+  .phase-duration span {
+    color: var(--accent);
+  }
+
+  /* TOPIC GRID */
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+
+  /* TOPIC CARD */
+  .topic-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+
+  .topic-card::before {
+    content:'';
+    position:absolute;
+    top:0; left:0; right:0;
+    height: 2px;
+    background: var(--card-accent, var(--accent));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .topic-card:hover {
+    border-color: var(--card-accent, var(--accent));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+
+  .topic-card:hover::before { transform: scaleX(1); }
+
+  .topic-card.done {
+    border-color: rgba(168,255,62,0.3);
+  }
+
+  .topic-card.done::before {
+    background: var(--accent3);
+    transform: scaleX(1);
+  }
+
+  .card-header {
+    padding: 16px 20px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .card-icon {
+    font-size: 22px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .card-info { flex: 1; }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  .card-subtitle {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .card-check {
+    width: 20px; height: 20px;
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .topic-card.done .card-check {
+    background: var(--accent3);
+    border-color: var(--accent3);
+    color: #000;
+  }
+
+  .card-body {
+    padding: 0 20px 16px;
+    display: none;
+  }
+
+  .card-body.open { display: block; }
+
+  .card-divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 14px;
+  }
+
+  .subtopics {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .subtopics li {
+    font-size: 11px;
+    color: var(--text);
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .subtopics li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--card-accent, var(--accent));
+    font-size: 9px;
+  }
+
+  .code-snippet {
+    background: #0a0d12;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 12px 14px;
+    font-size: 10.5px;
+    color: #8b9bb4;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: pre;
+    margin-top: 10px;
+  }
+
+  .code-snippet .kw  { color: #ff79c6; }
+  .code-snippet .ty  { color: #8be9fd; }
+  .code-snippet .fn  { color: #50fa7b; }
+  .code-snippet .cm  { color: #6272a4; }
+  .code-snippet .str { color: #f1fa8c; }
+  .code-snippet .num { color: #bd93f9; }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .tag {
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--text-dim);
+  }
+
+  /* CONNECTOR LINE between phases */
+  .connector {
+    display: flex;
+    justify-content: center;
+    margin: -20px 0 40px;
+  }
+
+  .connector-line {
+    width: 2px;
+    height: 50px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    opacity: 0.4;
+  }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 20px;
+    margin-bottom: 50px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    opacity: 0;
+    animation: fadeUp 0.8s 1s forwards;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* MOBILE */
+  @media (max-width: 600px) {
+    .topics-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 60px; }
+    .phase-num { font-size: 50px; }
+    .phase-title { font-size: 28px; }
+  }
+
+  /* TOTAL COMPLETION BADGE */
+  .completion-badge {
+    text-align: center;
+    padding: 60px 20px;
+    display: none;
+  }
+
+  .completion-badge.show { display: block; }
+  .badge-text {
+    font-family: 'Bebas Neue';
+    font-size: 80px;
+    color: var(--accent3);
+  }
+
+  /* Phase color overrides per level */
+  .phase[data-level="1"] .phase-level { color: #00d4ff; }
+  .phase[data-level="1"] .phase-num   { color: rgba(0,212,255,0.08); }
+  .phase[data-level="2"] .phase-level { color: #a78bfa; }
+  .phase[data-level="2"] .phase-num   { color: rgba(167,139,250,0.08); }
+  .phase[data-level="3"] .phase-level { color: #ff6b35; }
+  .phase[data-level="3"] .phase-num   { color: rgba(255,107,53,0.08); }
+  .phase[data-level="4"] .phase-level { color: #ff4444; }
+  .phase[data-level="4"] .phase-num   { color: rgba(255,68,68,0.08); }
+  .phase[data-level="5"] .phase-level { color: #a8ff3e; }
+  .phase[data-level="5"] .phase-num   { color: rgba(168,255,62,0.08); }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">// Complete Mastery Roadmap</div>
+  <h1>C<span>++</span></h1>
+  <div class="hero-sub">From zero to systems programmer — feel every concept deeply</div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Phases</div></div>
+    <div class="stat"><div class="stat-num">40+</div><div class="stat-label">Core Topics</div></div>
+    <div class="stat"><div class="stat-num">200+</div><div class="stat-label">Subtopics</div></div>
+    <div class="stat"><div class="stat-num" id="pct-done">0%</div><div class="stat-label">Mastered</div></div>
+  </div>
+</div>
+
+<!-- STICKY PROGRESS -->
+<div class="progress-bar-wrap">
+  <div class="progress-label">Progress</div>
+  <div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div>
+  <div class="progress-pct" id="prog-pct">0%</div>
+</div>
+
+<div class="container">
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#00d4ff"></div> Phase 1 — Foundations</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div> Phase 2 — Core C++</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ff6b35"></div> Phase 3 — Advanced</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ff4444"></div> Phase 4 — Expert</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#a8ff3e"></div> Phase 5 — Systems</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#a8ff3e; opacity:0.5"></div> Click cards to expand · Check to mark done</div>
+  </div>
+
+  <!-- ==================== PHASE 1 ==================== -->
+  <div class="phase" data-level="1">
+    <div class="phase-header">
+      <div class="phase-num">01</div>
+      <div class="phase-meta">
+        <div class="phase-level">Phase 1 · Beginner</div>
+        <div class="phase-title">Foundations & Syntax</div>
+        <div class="phase-duration">Estimated time: <span>3–5 weeks</span></div>
+      </div>
+    </div>
+    <div class="topics-grid">
+
+      <div class="topic-card" style="--card-accent:#00d4ff" data-id="t1">
+        <div class="card-header">
+          <div class="card-icon">⚙️</div>
+          <div class="card-info">
+            <div class="card-title">Environment & Toolchain</div>
+            <div class="card-subtitle">Setup · Compilers · Build</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>Installing GCC / Clang / MSVC — understanding the difference</li>
+            <li>Compilation pipeline: preprocessor → compiler → assembler → linker</li>
+            <li>g++ flags: -o, -std=c++20, -Wall, -Wextra, -O2, -g</li>
+            <li>CMake basics: CMakeLists.txt, add_executable, target_compile_options</li>
+            <li>VS Code / CLion setup with IntelliSense, debugger (GDB/LLDB)</li>
+            <li>Understanding object files (.o), static libs (.a), shared libs (.so/.dll)</li>
+          </ul>
+          <div class="code-snippet"><span class="cm">// compile & run</span>
+<span class="ty">g++</span> -std=c++20 -Wall -o hello hello.cpp
+./hello
+
+<span class="cm">// CMakeLists.txt</span>
+<span class="fn">cmake_minimum_required</span>(VERSION 3.20)
+<span class="fn">project</span>(MyApp)
+<span class="fn">add_executable</span>(app main.cpp)</div>
+          <div class="card-tags"><span class="tag">tooling</span><span class="tag">cmake</span><span class="tag">compiler</span></div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#00d4ff" data-id="t2">
+        <div class="card-header">
+          <div class="card-icon">📦</div>
+          <div class="card-info">
+            <div class="card-title">Types, Variables & Operators</div>
+            <div class="card-subtitle">Core Language</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>Fundamental types: int, float, double, char, bool, void</li>
+            <li>Fixed-width types: int32_t, uint64_t (cstdint) — why they matter</li>
+            <li>auto, const, constexpr — compile-time vs runtime</li>
+            <li>Arithmetic, comparison, logical, bitwise operators</li>
+            <li>Type conversions: implicit coercion vs explicit casts (static_cast, reinterpret_cast, const_cast)</li>
+            <li>sizeof, alignof — memory layout intuition</li>
+            <li>Literals: 0xFF hex, 0b1010 binary, 1'000'000 digit separators</li>
+          </ul>
+          <div class="code-snippet"><span class="kw">constexpr</span> <span class="ty">double</span> PI = 3.14159265358979;
+<span class="kw">auto</span> x = <span class="num">42</span>;            <span class="cm">// int</span>
+<span class="ty">int32_t</span> safe = <span class="num">0xFFFF</span>;
+<span class="kw">const</span> <span class="ty">char</span> c = <span class="str">'A'</span>;
+<span class="kw">static_cast</span>&lt;<span class="ty">double</span>&gt;(x); <span class="cm">// explicit</span></div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#00d4ff" data-id="t3">
+        <div class="card-header">
+          <div class="card-icon">🔀</div>
+          <div class="card-info">
+            <div class="card-title">Control Flow</div>
+            <div class="card-subtitle">Branching · Loops · Jump</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>if / else if / else — short-circuit evaluation</li>
+            <li>switch/case with fallthrough, [[fallthrough]] attribute</li>
+            <li>Ternary operator: condition ? a : b</li>
+            <li>for, while, do-while — choosing the right loop</li>
+            <li>Range-based for (C++11): for (auto& x : container)</li>
+            <li>break, continue, goto (and why to avoid goto)</li>
+            <li>if-constexpr for compile-time branching</li>
+          </ul>
+          <div class="code-snippet"><span class="kw">for</span> (<span class="kw">auto</span>&amp; elem : vec) {
+  <span class="kw">if</span> (elem &lt; <span class="num">0</span>) <span class="kw">continue</span>;
+  process(elem);
+}
+
+<span class="kw">if constexpr</span> (<span class="fn">std::is_integral_v</span>&lt;T&gt;)
+  <span class="cm">// compile-time branch</span></div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#00d4ff" data-id="t4">
+        <div class="card-header">
+          <div class="card-icon">🔧</div>
+          <div class="card-info">
+            <div class="card-title">Functions</div>
+            <div class="card-subtitle">Declaration · Overload · Default Args</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>Function declaration vs definition, forward declarations</li>
+            <li>Pass by value, reference, const reference, pointer</li>
+            <li>Return type deduction (auto), trailing return types</li>
+            <li>Function overloading — resolution rules</li>
+            <li>Default parameters — placement rules</li>
+            <li>inline functions — when and why</li>
+            <li>Variadic functions (...) vs variadic templates</li>
+            <li>Recursion and stack depth awareness</li>
+          </ul>
+          <div class="code-snippet"><span class="ty">int</span> <span class="fn">add</span>(<span class="ty">int</span> a, <span class="ty">int</span> b = <span class="num">0</span>);
+<span class="ty">double</span> <span class="fn">add</span>(<span class="ty">double</span> a, <span class="ty">double</span> b); <span class="cm">// overload</span>
+
+<span class="kw">auto</span> <span class="fn">square</span>(<span class="ty">int</span> x) -&gt; <span class="ty">int</span> { <span class="kw">return</span> x*x; }
+
+<span class="cm">// pass by const-ref for efficiency</span>
+<span class="ty">void</span> <span class="fn">print</span>(<span class="kw">const</span> std::string&amp; s);</div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#00d4ff" data-id="t5">
+        <div class="card-header">
+          <div class="card-icon">🧩</div>
+          <div class="card-info">
+            <div class="card-title">Arrays, Strings & I/O</div>
+            <div class="card-subtitle">std::array · std::string · cin/cout</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>C-style arrays vs std::array — safety and size</li>
+            <li>std::string: construction, concatenation, substr, find, replace</li>
+            <li>String views (std::string_view) — zero-copy reading</li>
+            <li>std::cin, std::cout, std::cerr — stream operations</li>
+            <li>std::getline for multi-word input</li>
+            <li>std::format (C++20) and printf-style formatting</li>
+            <li>File I/O: ifstream, ofstream, fstream basics</li>
+          </ul>
+          <div class="code-snippet"><span class="ty">std::string</span> s = <span class="str">"hello"</span>;
+s += <span class="str">" world"</span>;
+<span class="kw">auto</span> pos = s.<span class="fn">find</span>(<span class="str">"world"</span>); <span class="cm">// 6</span>
+
+<span class="cm">// C++20 format</span>
+<span class="ty">std::string</span> msg = std::<span class="fn">format</span>(<span class="str">"x={}"</span>, <span class="num">42</span>);
+
+std::<span class="fn">getline</span>(std::cin, s);  <span class="cm">// full line</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-line"></div></div>
+
+  <!-- ==================== PHASE 2 ==================== -->
+  <div class="phase" data-level="2">
+    <div class="phase-header">
+      <div class="phase-num">02</div>
+      <div class="phase-meta">
+        <div class="phase-level">Phase 2 · Intermediate</div>
+        <div class="phase-title">Core C++ Features</div>
+        <div class="phase-duration">Estimated time: <span>6–10 weeks</span></div>
+      </div>
+    </div>
+    <div class="topics-grid">
+
+      <div class="topic-card" style="--card-accent:#a78bfa" data-id="t6">
+        <div class="card-header">
+          <div class="card-icon">🏗️</div>
+          <div class="card-info">
+            <div class="card-title">Pointers & References</div>
+            <div class="card-subtitle">Memory Model · Raw Pointers</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>Memory model: stack vs heap vs static storage</li>
+            <li>Pointer arithmetic, pointer to pointer (**)</li>
+            <li>nullptr vs NULL — always use nullptr</li>
+            <li>References: lvalue refs, rvalue refs (&&), const refs</li>
+            <li>Pointer vs reference: when to use each</li>
+            <li>Dangling pointers, wild pointers, null dereference — undefined behavior</li>
+            <li>const T*, T* const, const T* const — reading right-to-left rule</li>
+          </ul>
+          <div class="code-snippet"><span class="ty">int</span> x = <span class="num">10</span>;
+<span class="ty">int</span>* p = &amp;x;          <span class="cm">// pointer to x</span>
+*p = <span class="num">20</span>;              <span class="cm">// dereference = write</span>
+
+<span class="ty">int</span>&amp; ref = x;         <span class="cm">// lvalue reference</span>
+<span class="ty">int</span>&amp;&amp; rref = <span class="num">42</span>;      <span class="cm">// rvalue reference</span>
+
+<span class="kw">const</span> <span class="ty">int</span>* cp = &amp;x;  <span class="cm">// can't change *cp</span>
+<span class="ty">int</span>* <span class="kw">const</span> pc = &amp;x;  <span class="cm">// can't change pc</span></div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#a78bfa" data-id="t7">
+        <div class="card-header">
+          <div class="card-icon">🏛️</div>
+          <div class="card-info">
+            <div class="card-title">OOP — Classes & Objects</div>
+            <div class="card-subtitle">Encapsulation · Constructors · RAII</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>struct vs class (access defaults)</li>
+            <li>Constructors: default, parameterized, delegating, copy, move</li>
+            <li>Destructor: ~ClassName() and RAII pattern</li>
+            <li>Member initializer list — always prefer over assignment</li>
+            <li>The Rule of 0/3/5 — deep copy vs shallow copy</li>
+            <li>Access modifiers: public, private, protected</li>
+            <li>this pointer, static members & methods</li>
+            <li>Operator overloading: +, ==, <<, [], (), -></li>
+            <li>Friend functions and classes</li>
+          </ul>
+          <div class="code-snippet"><span class="kw">class</span> <span class="ty">Vector2D</span> {
+<span class="kw">public</span>:
+  <span class="fn">Vector2D</span>(<span class="ty">double</span> x, <span class="ty">double</span> y) : x{x}, y{y} {}
+  <span class="ty">Vector2D</span> <span class="kw">operator</span>+(<span class="kw">const</span> <span class="ty">Vector2D</span>&amp; o) <span class="kw">const</span>;
+  <span class="kw">~</span><span class="fn">Vector2D</span>() = <span class="kw">default</span>;  <span class="cm">// Rule of 0</span>
+<span class="kw">private</span>:
+  <span class="ty">double</span> x, y;
+};</div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#a78bfa" data-id="t8">
+        <div class="card-header">
+          <div class="card-icon">🧬</div>
+          <div class="card-info">
+            <div class="card-title">Inheritance & Polymorphism</div>
+            <div class="card-subtitle">Virtual · Override · vtable</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>Single, multiple, and virtual inheritance</li>
+            <li>virtual functions and the vtable mechanism (how dispatch works)</li>
+            <li>override and final keywords — compiler safety</li>
+            <li>Pure virtual functions and abstract classes (interface pattern)</li>
+            <li>virtual destructors — memory safety rule</li>
+            <li>Object slicing — the hidden trap</li>
+            <li>dynamic_cast and RTTI — when and cost</li>
+            <li>CRTP (Curiously Recurring Template Pattern) for static polymorphism</li>
+          </ul>
+          <div class="code-snippet"><span class="kw">class</span> <span class="ty">Shape</span> {
+<span class="kw">public</span>:
+  <span class="kw">virtual</span> <span class="ty">double</span> <span class="fn">area</span>() <span class="kw">const</span> = <span class="num">0</span>; <span class="cm">// pure virtual</span>
+  <span class="kw">virtual</span> <span class="kw">~</span><span class="fn">Shape</span>() = <span class="kw">default</span>;     <span class="cm">// virtual dtor!</span>
+};
+
+<span class="kw">class</span> <span class="ty">Circle</span> : <span class="kw">public</span> <span class="ty">Shape</span> {
+  <span class="ty">double</span> <span class="fn">area</span>() <span class="kw">const override</span> { <span class="kw">return</span> PI * r*r; }
+};</div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#a78bfa" data-id="t9">
+        <div class="card-header">
+          <div class="card-icon">📚</div>
+          <div class="card-info">
+            <div class="card-title">STL Containers</div>
+            <div class="card-subtitle">vector · map · set · deque · list</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>std::vector — dynamic array, capacity vs size, reserve(), emplace_back()</li>
+            <li>std::array — fixed-size stack array, no overhead</li>
+            <li>std::deque — double-ended queue, O(1) front/back insert</li>
+            <li>std::list / std::forward_list — linked lists, when useful</li>
+            <li>std::map / std::multimap — red-black tree, O(log n)</li>
+            <li>std::unordered_map — hash table, O(1) average, hash collision</li>
+            <li>std::set / std::unordered_set — unique keys</li>
+            <li>std::stack, std::queue, std::priority_queue — adapters</li>
+            <li>std::span (C++20) — non-owning view over contiguous data</li>
+          </ul>
+          <div class="code-snippet"><span class="ty">std::vector</span>&lt;<span class="ty">int</span>&gt; v;
+v.<span class="fn">reserve</span>(<span class="num">100</span>);     <span class="cm">// avoid reallocs</span>
+v.<span class="fn">emplace_back</span>(<span class="num">42</span>); <span class="cm">// construct in place</span>
+
+<span class="ty">std::unordered_map</span>&lt;<span class="ty">std::string</span>, <span class="ty">int</span>&gt; freq;
+freq[<span class="str">"hello"</span>]++;
+
+<span class="cm">// C++20 span — no copy</span>
+<span class="ty">std::span</span>&lt;<span class="ty">int</span>&gt; view{v.<span class="fn">data</span>(), <span class="num">5</span>};</div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#a78bfa" data-id="t10">
+        <div class="card-header">
+          <div class="card-icon">🔄</div>
+          <div class="card-info">
+            <div class="card-title">Iterators & Algorithms</div>
+            <div class="card-subtitle">STL Algorithms · Ranges (C++20)</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>Iterator categories: input, output, forward, bidirectional, random-access</li>
+            <li>begin/end, cbegin/cend, rbegin/rend</li>
+            <li>Core algorithms: sort, find, count, transform, accumulate, copy</li>
+            <li>Predicate-based: find_if, remove_if, partition, stable_sort</li>
+            <li>std::ranges (C++20): compose, pipe, lazy evaluation</li>
+            <li>std::views: filter, transform, take, drop — zero-copy pipelines</li>
+            <li>Custom comparators with lambdas</li>
+          </ul>
+          <div class="code-snippet"><span class="kw">namespace</span> rv = std::ranges::views;
+
+<span class="cm">// C++20 ranges pipeline</span>
+<span class="kw">auto</span> result = v
+  | rv::<span class="fn">filter</span>([](x){ <span class="kw">return</span> x&gt;<span class="num">0</span>; })
+  | rv::<span class="fn">transform</span>([](x){ <span class="kw">return</span> x*<span class="num">2</span>; })
+  | rv::<span class="fn">take</span>(<span class="num">5</span>);
+
+std::<span class="fn">sort</span>(v.<span class="fn">begin</span>(), v.<span class="fn">end</span>(),
+  [](a,b){ <span class="kw">return</span> a &gt; b; }); <span class="cm">// descending</span></div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#a78bfa" data-id="t11">
+        <div class="card-header">
+          <div class="card-icon">⚡</div>
+          <div class="card-info">
+            <div class="card-title">Lambdas & Functional</div>
+            <div class="card-subtitle">Closures · std::function · Captures</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>Lambda syntax: [capture](params) -> return { body }</li>
+            <li>Capture modes: by value [=], by reference [&], mixed [x, &y]</li>
+            <li>Mutable lambdas: modify captured copies</li>
+            <li>Generic lambdas with auto parameters (C++14)</li>
+            <li>Template lambdas (C++20): []&lt;typename T&gt;(T x){}</li>
+            <li>std::function — type-erased callable (with overhead)</li>
+            <li>std::bind and placeholders (mostly replaced by lambdas)</li>
+            <li>Immediately Invoked Function Expressions (IIFE)</li>
+          </ul>
+          <div class="code-snippet"><span class="kw">auto</span> add = [](<span class="ty">int</span> a, <span class="ty">int</span> b) { <span class="kw">return</span> a+b; };
+
+<span class="ty">int</span> mult = <span class="num">3</span>;
+<span class="kw">auto</span> scale = [mult](<span class="ty">int</span> x) { <span class="kw">return</span> x * mult; };
+
+<span class="cm">// generic lambda (C++14)</span>
+<span class="kw">auto</span> print = [](<span class="kw">auto</span>&amp;&amp; x) {
+  std::cout &lt;&lt; x &lt;&lt; <span class="str">'\n'</span>;
+};</div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#a78bfa" data-id="t12">
+        <div class="card-header">
+          <div class="card-icon">🗑️</div>
+          <div class="card-info">
+            <div class="card-title">Smart Pointers & Memory</div>
+            <div class="card-subtitle">unique_ptr · shared_ptr · weak_ptr</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>RAII principle — resource lifetime tied to object lifetime</li>
+            <li>std::unique_ptr — sole ownership, no copy, move-only</li>
+            <li>std::shared_ptr — reference counting, control block overhead</li>
+            <li>std::weak_ptr — break cycles, non-owning observer</li>
+            <li>std::make_unique / std::make_shared — prefer over new</li>
+            <li>Custom deleters for unique_ptr</li>
+            <li>The dreaded shared_ptr circular reference and how weak_ptr solves it</li>
+            <li>new/delete — when you still need them (custom allocators)</li>
+          </ul>
+          <div class="code-snippet"><span class="kw">auto</span> p = std::<span class="fn">make_unique</span>&lt;<span class="ty">int</span>&gt;(<span class="num">42</span>);
+<span class="cm">// p auto-deletes when out of scope</span>
+
+<span class="kw">auto</span> s = std::<span class="fn">make_shared</span>&lt;<span class="ty">Widget</span>&gt;();
+std::<span class="ty">weak_ptr</span>&lt;<span class="ty">Widget</span>&gt; w = s;  <span class="cm">// no ownership</span>
+
+<span class="kw">if</span> (<span class="kw">auto</span> locked = w.<span class="fn">lock</span>())   <span class="cm">// safe access</span>
+  locked-&gt;<span class="fn">use</span>();</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-line"></div></div>
+
+  <!-- ==================== PHASE 3 ==================== -->
+  <div class="phase" data-level="3">
+    <div class="phase-header">
+      <div class="phase-num">03</div>
+      <div class="phase-meta">
+        <div class="phase-level">Phase 3 · Advanced</div>
+        <div class="phase-title">Templates & Modern C++</div>
+        <div class="phase-duration">Estimated time: <span>8–12 weeks</span></div>
+      </div>
+    </div>
+    <div class="topics-grid">
+
+      <div class="topic-card" style="--card-accent:#ff6b35" data-id="t13">
+        <div class="card-header">
+          <div class="card-icon">🧪</div>
+          <div class="card-info">
+            <div class="card-title">Templates</div>
+            <div class="card-subtitle">Generic Programming · Type Deduction</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>Function templates — type deduction rules</li>
+            <li>Class templates — partial and full specialization</li>
+            <li>Non-type template parameters (NTTP)</li>
+            <li>Variadic templates: parameter packs, fold expressions (C++17)</li>
+            <li>Template template parameters</li>
+            <li>SFINAE: enable_if, void_t tricks</li>
+            <li>Concepts (C++20): requires clause, concept definitions</li>
+            <li>Abbreviated function templates: auto parameters (C++20)</li>
+            <li>Two-phase lookup — why template code compiles differently</li>
+          </ul>
+          <div class="code-snippet"><span class="cm">// Concept (C++20)</span>
+<span class="kw">template</span>&lt;<span class="kw">typename</span> T&gt;
+<span class="kw">concept</span> <span class="ty">Numeric</span> = <span class="fn">std::is_arithmetic_v</span>&lt;T&gt;;
+
+<span class="ty">Numeric</span> <span class="kw">auto</span> <span class="fn">add</span>(<span class="ty">Numeric</span> <span class="kw">auto</span> a, <span class="ty">Numeric</span> <span class="kw">auto</span> b){
+  <span class="kw">return</span> a + b;
+}
+
+<span class="cm">// fold expression (C++17)</span>
+<span class="kw">template</span>&lt;<span class="kw">typename</span>... Args&gt;
+<span class="kw">auto</span> <span class="fn">sum</span>(Args... args) { <span class="kw">return</span> (args + ...); }</div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#ff6b35" data-id="t14">
+        <div class="card-header">
+          <div class="card-icon">🚀</div>
+          <div class="card-info">
+            <div class="card-title">Move Semantics & Value Categories</div>
+            <div class="card-subtitle">rvalue · std::move · Perfect Forwarding</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>Value categories: lvalue, rvalue, xvalue, prvalue, glvalue</li>
+            <li>Move constructor and move assignment operator</li>
+            <li>std::move — cast to rvalue reference (no actual moving!)</li>
+            <li>std::forward — perfect forwarding in templates</li>
+            <li>Return Value Optimization (RVO) and Named RVO (NRVO)</li>
+            <li>When to write move operations vs relying on Rule of 0</li>
+            <li>noexcept specifier on move operations — STL requirement</li>
+            <li>std::exchange — useful idiom in move operations</li>
+          </ul>
+          <div class="code-snippet"><span class="kw">class</span> <span class="ty">Buffer</span> {
+<span class="kw">public</span>:
+  <span class="cm">// Move constructor</span>
+  <span class="fn">Buffer</span>(<span class="ty">Buffer</span>&amp;&amp; o) <span class="kw">noexcept</span>
+    : data{std::<span class="fn">exchange</span>(o.data, <span class="kw">nullptr</span>)}
+    , size{std::<span class="fn">exchange</span>(o.size, <span class="num">0</span>)} {}
+};
+
+<span class="cm">// perfect forward</span>
+<span class="kw">template</span>&lt;<span class="kw">typename</span> T&gt;
+<span class="ty">void</span> <span class="fn">wrap</span>(T&amp;&amp; val) {
+  <span class="fn">process</span>(std::<span class="fn">forward</span>&lt;T&gt;(val));
+}</div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#ff6b35" data-id="t15">
+        <div class="card-header">
+          <div class="card-icon">⚠️</div>
+          <div class="card-info">
+            <div class="card-title">Error Handling</div>
+            <div class="card-subtitle">Exceptions · std::expected · Error Codes</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>try/catch/throw — exception mechanics</li>
+            <li>Exception hierarchy: std::exception, std::runtime_error, etc.</li>
+            <li>Custom exception classes</li>
+            <li>noexcept specifier — performance and move semantics</li>
+            <li>Stack unwinding and RAII — why RAII is exception-safe</li>
+            <li>Exception safety guarantees: no-throw, strong, basic</li>
+            <li>Error codes (errno, std::error_code, std::errc)</li>
+            <li>std::expected&lt;T,E&gt; (C++23) — functional error handling</li>
+            <li>When to use which: exceptions vs error codes vs expected</li>
+          </ul>
+          <div class="code-snippet"><span class="cm">// C++23 std::expected</span>
+<span class="ty">std::expected</span>&lt;<span class="ty">int</span>, <span class="ty">std::string</span>&gt; <span class="fn">parse</span>(<span class="ty">std::string_view</span> s){
+  <span class="kw">if</span> (s.<span class="fn">empty</span>()) <span class="kw">return</span> std::<span class="fn">unexpected</span>(<span class="str">"empty"</span>);
+  <span class="kw">return</span> <span class="fn">std::stoi</span>(std::string{s});
+}
+
+<span class="kw">auto</span> r = <span class="fn">parse</span>(<span class="str">"42"</span>);
+<span class="kw">if</span> (r) std::cout &lt;&lt; *r;  <span class="cm">// 42</span></div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#ff6b35" data-id="t16">
+        <div class="card-header">
+          <div class="card-icon">🎭</div>
+          <div class="card-info">
+            <div class="card-title">Modern C++ Utilities</div>
+            <div class="card-subtitle">optional · variant · tuple · any</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>std::optional&lt;T&gt; — nullable value without heap allocation</li>
+            <li>std::variant&lt;Ts...&gt; — type-safe union, std::visit pattern</li>
+            <li>std::any — type-erased storage, any_cast</li>
+            <li>std::tuple — heterogeneous fixed-size collection</li>
+            <li>std::pair and structured bindings: auto [a, b] = pair</li>
+            <li>std::reference_wrapper — store references in containers</li>
+            <li>std::monostate — tag type for variant default state</li>
+          </ul>
+          <div class="code-snippet"><span class="kw">using</span> <span class="ty">Result</span> = std::<span class="ty">variant</span>&lt;<span class="ty">int</span>, <span class="ty">std::string</span>, <span class="ty">Error</span>&gt;;
+
+<span class="ty">Result</span> r = <span class="fn">compute</span>();
+std::<span class="fn">visit</span>([](auto&amp;&amp; val) {
+  <span class="cm">// handles each type automatically</span>
+}, r);
+
+<span class="ty">std::optional</span>&lt;<span class="ty">User</span>&gt; u = <span class="fn">findUser</span>(<span class="num">42</span>);
+<span class="kw">if</span> (u) u-&gt;<span class="fn">greet</span>();  <span class="cm">// safe access</span></div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#ff6b35" data-id="t17">
+        <div class="card-header">
+          <div class="card-icon">🧵</div>
+          <div class="card-info">
+            <div class="card-title">Multithreading</div>
+            <div class="card-subtitle">threads · mutex · atomic · async</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>std::thread — creation, join, detach, hardware_concurrency</li>
+            <li>Data races and undefined behavior in concurrent code</li>
+            <li>std::mutex, std::lock_guard, std::unique_lock, std::scoped_lock</li>
+            <li>std::condition_variable — producer/consumer pattern</li>
+            <li>std::atomic&lt;T&gt; — lock-free operations, memory orders</li>
+            <li>Memory ordering: relaxed, acquire, release, acq_rel, seq_cst</li>
+            <li>std::future / std::promise / std::async — task-based parallelism</li>
+            <li>std::jthread (C++20) — automatically joins on destruction</li>
+            <li>Thread-local storage: thread_local keyword</li>
+          </ul>
+          <div class="code-snippet"><span class="ty">std::atomic</span>&lt;<span class="ty">int</span>&gt; counter{<span class="num">0</span>};
+
+<span class="kw">auto</span> fut = std::<span class="fn">async</span>(std::launch::async, [&amp;]{
+  counter.<span class="fn">fetch_add</span>(<span class="num">1</span>, std::memory_order_relaxed);
+  <span class="kw">return</span> <span class="fn">heavyWork</span>();
+});
+
+<span class="kw">auto</span> result = fut.<span class="fn">get</span>(); <span class="cm">// blocks, returns value</span></div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#ff6b35" data-id="t18">
+        <div class="card-header">
+          <div class="card-icon">📝</div>
+          <div class="card-info">
+            <div class="card-title">Compile-Time Programming</div>
+            <div class="card-subtitle">constexpr · consteval · constinit</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>constexpr functions — evaluated at compile time if possible</li>
+            <li>consteval (C++20) — must be compile-time (immediate function)</li>
+            <li>constinit (C++20) — guaranteed constant initialization</li>
+            <li>constexpr STL: string, vector, algorithms are constexpr in C++20</li>
+            <li>Template metaprogramming (TMP) — type lists, recursion</li>
+            <li>Type traits: std::is_same, std::decay, std::remove_reference</li>
+            <li>std::integral_constant, std::true_type, std::false_type</li>
+            <li>if constexpr — compile-time conditional code</li>
+          </ul>
+          <div class="code-snippet"><span class="kw">consteval</span> <span class="ty">int</span> <span class="fn">factorial</span>(<span class="ty">int</span> n) {
+  <span class="kw">return</span> n &lt;= <span class="num">1</span> ? <span class="num">1</span> : n * <span class="fn">factorial</span>(n-<span class="num">1</span>);
+}
+<span class="kw">constexpr</span> <span class="ty">int</span> f10 = <span class="fn">factorial</span>(<span class="num">10</span>); <span class="cm">// baked in binary</span>
+
+<span class="kw">template</span>&lt;<span class="kw">typename</span> T&gt;
+<span class="kw">constexpr</span> <span class="ty">bool</span> isInt = <span class="fn">std::is_integral_v</span>&lt;T&gt;;</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-line"></div></div>
+
+  <!-- ==================== PHASE 4 ==================== -->
+  <div class="phase" data-level="4">
+    <div class="phase-header">
+      <div class="phase-num">04</div>
+      <div class="phase-meta">
+        <div class="phase-level">Phase 4 · Expert</div>
+        <div class="phase-title">Performance & Design Patterns</div>
+        <div class="phase-duration">Estimated time: <span>10–16 weeks</span></div>
+      </div>
+    </div>
+    <div class="topics-grid">
+
+      <div class="topic-card" style="--card-accent:#ff4444" data-id="t19">
+        <div class="card-header">
+          <div class="card-icon">🔬</div>
+          <div class="card-info">
+            <div class="card-title">Memory Management & Allocators</div>
+            <div class="card-subtitle">Heap · Pools · PMR</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>How malloc/free and new/delete work under the hood</li>
+            <li>Heap fragmentation — why it matters in long-running programs</li>
+            <li>Placement new — constructing objects in pre-allocated memory</li>
+            <li>Custom allocators for STL containers</li>
+            <li>std::pmr (Polymorphic Memory Resources, C++17): memory_resource</li>
+            <li>Pool allocators, arena allocators, stack allocators</li>
+            <li>Memory alignment: alignas, aligned_alloc</li>
+            <li>operator new overloading for custom allocation strategies</li>
+          </ul>
+          <div class="code-snippet"><span class="cm">// PMR arena allocator</span>
+<span class="ty">char</span> buf[<span class="num">1024</span>];
+std::pmr::<span class="ty">monotonic_buffer_resource</span> arena{buf, <span class="kw">sizeof</span>(buf)};
+std::pmr::<span class="ty">vector</span>&lt;<span class="ty">int</span>&gt; v{&amp;arena};  <span class="cm">// no heap!</span>
+v.<span class="fn">push_back</span>(<span class="num">1</span>);   <span class="cm">// uses arena memory</span></div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#ff4444" data-id="t20">
+        <div class="card-header">
+          <div class="card-icon">📊</div>
+          <div class="card-info">
+            <div class="card-title">Performance & Optimization</div>
+            <div class="card-subtitle">Cache · SIMD · Profiling</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>CPU cache hierarchy (L1/L2/L3) and cache-friendly data layouts</li>
+            <li>Data-Oriented Design (DOD) vs Object-Oriented Design</li>
+            <li>Branch prediction: avoid unpredictable branches in hot loops</li>
+            <li>False sharing in multithreaded code — cache line padding</li>
+            <li>SIMD intrinsics: SSE, AVX2 — vectorized math</li>
+            <li>Compiler optimizations: -O2, -O3, PGO, LTO</li>
+            <li>Profiling tools: perf, Valgrind, VTune, Instruments, Tracy</li>
+            <li>Benchmarking with Google Benchmark — avoiding pitfalls</li>
+            <li>Undefined behavior sanitizer (UBSan), Address Sanitizer (ASan)</li>
+          </ul>
+          <div class="code-snippet"><span class="cm">// AoS → SoA for SIMD friendliness</span>
+<span class="cm">// Bad:  [{x,y,z}, {x,y,z}, ...]   // AoS</span>
+<span class="cm">// Good: {xs[], ys[], zs[]}         // SoA</span>
+
+<span class="cm">// Cache line align to avoid false sharing</span>
+<span class="kw">struct alignas</span>(<span class="num">64</span>) <span class="ty">PaddedCounter</span> {
+  std::<span class="ty">atomic</span>&lt;<span class="ty">int</span>&gt; value{<span class="num">0</span>};
+};</div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#ff4444" data-id="t21">
+        <div class="card-header">
+          <div class="card-icon">🏗️</div>
+          <div class="card-info">
+            <div class="card-title">Design Patterns in C++</div>
+            <div class="card-subtitle">Creational · Structural · Behavioral</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>Singleton — thread-safe with Meyers singleton (static local)</li>
+            <li>Factory Method & Abstract Factory</li>
+            <li>Builder pattern — fluent interface for complex construction</li>
+            <li>RAII as the canonical C++ pattern for resource management</li>
+            <li>Observer/Event system — signal-slot pattern</li>
+            <li>Strategy pattern — policy-based design with templates</li>
+            <li>Decorator — wrapping without inheritance</li>
+            <li>Command pattern — undo/redo systems</li>
+            <li>Type Erasure — polymorphism without virtual (std::function style)</li>
+          </ul>
+          <div class="code-snippet"><span class="cm">// Meyers Singleton (thread-safe in C++11)</span>
+<span class="ty">Logger</span>&amp; <span class="ty">Logger</span>::<span class="fn">instance</span>() {
+  <span class="kw">static</span> <span class="ty">Logger</span> inst;  <span class="cm">// lazy, thread-safe</span>
+  <span class="kw">return</span> inst;
+}
+
+<span class="cm">// Policy-based strategy via templates</span>
+<span class="kw">template</span>&lt;<span class="kw">typename</span> <span class="ty">SortPolicy</span>&gt;
+<span class="kw">class</span> <span class="ty">Sorter</span> : <span class="kw">public</span> <span class="ty">SortPolicy</span> { ... };</div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#ff4444" data-id="t22">
+        <div class="card-header">
+          <div class="card-icon">🔒</div>
+          <div class="card-info">
+            <div class="card-title">Advanced Templates & TMP</div>
+            <div class="card-subtitle">CRTP · Policy Classes · Expression Templates</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>CRTP — static polymorphism, mixin patterns, code reuse</li>
+            <li>Policy-based class design — combining policies with templates</li>
+            <li>Expression templates — lazy evaluation for math libs (Eigen style)</li>
+            <li>Type lists at compile time — recursive template patterns</li>
+            <li>std::index_sequence and compile-time indexing</li>
+            <li>Template deduction guides (C++17)</li>
+            <li>Concepts constraints chaining with &&, || operators</li>
+            <li>Reflection (compile-time in future, current workarounds)</li>
+          </ul>
+          <div class="code-snippet"><span class="cm">// CRTP Mixin</span>
+<span class="kw">template</span>&lt;<span class="kw">typename</span> <span class="ty">Derived</span>&gt;
+<span class="kw">class</span> <span class="ty">Printable</span> {
+<span class="kw">public</span>:
+  <span class="ty">void</span> <span class="fn">print</span>() <span class="kw">const</span> {
+    <span class="cm">// calls Derived's to_string() — no vtable!</span>
+    <span class="kw">static_cast</span>&lt;<span class="kw">const</span> <span class="ty">Derived</span>*&gt;(<span class="kw">this</span>)-&gt;<span class="fn">to_string</span>();
+  }
+};</div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#ff4444" data-id="t23">
+        <div class="card-header">
+          <div class="card-icon">🌐</div>
+          <div class="card-info">
+            <div class="card-title">Coroutines (C++20)</div>
+            <div class="card-subtitle">co_await · co_yield · co_return</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>What coroutines are — suspend/resume execution model</li>
+            <li>co_await — suspend and await a result</li>
+            <li>co_yield — generate values lazily (generators)</li>
+            <li>co_return — return final value and complete</li>
+            <li>coroutine_handle, promise_type — the machinery underneath</li>
+            <li>Writing a simple generator&lt;T&gt; type from scratch</li>
+            <li>Async I/O with coroutines — event loop integration (asio, libuv)</li>
+            <li>std::generator (C++23) — standard lazy range generator</li>
+          </ul>
+          <div class="code-snippet"><span class="cm">// C++23 std::generator</span>
+std::<span class="fn">generator</span>&lt;<span class="ty">int</span>&gt; <span class="fn">fibonacci</span>() {
+  <span class="ty">int</span> a=<span class="num">0</span>, b=<span class="num">1</span>;
+  <span class="kw">while</span>(<span class="kw">true</span>) {
+    <span class="kw">co_yield</span> a;
+    a = std::<span class="fn">exchange</span>(b, a+b);
+  }
+}
+
+<span class="kw">for</span> (<span class="ty">int</span> n : <span class="fn">fibonacci</span>() | rv::<span class="fn">take</span>(<span class="num">10</span>))
+  std::cout &lt;&lt; n &lt;&lt; <span class="str">' '</span>;</div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#ff4444" data-id="t24">
+        <div class="card-header">
+          <div class="card-icon">🔗</div>
+          <div class="card-info">
+            <div class="card-title">Undefined Behavior & Safety</div>
+            <div class="card-subtitle">UB · Sanitizers · Safe Coding</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>The full taxonomy of undefined behavior (signed overflow, null deref, etc.)</li>
+            <li>Why UB is dangerous — compiler assumes it never happens</li>
+            <li>Address Sanitizer (ASan) — heap/stack overflow, use-after-free</li>
+            <li>Undefined Behavior Sanitizer (UBSan) — integer overflow, shift issues</li>
+            <li>Thread Sanitizer (TSan) — data race detection</li>
+            <li>Memory Sanitizer (MSan) — uninitialized reads</li>
+            <li>Static analysis: clang-tidy, cppcheck, SonarQube</li>
+            <li>Safe integer arithmetic libraries</li>
+          </ul>
+          <div class="code-snippet"><span class="cm"># Run with all sanitizers in dev:</span>
+g++ -fsanitize=address,undefined \
+    -fsanitize=thread \
+    -fno-omit-frame-pointer \
+    -g -O1 -o app main.cpp
+
+<span class="cm">// [[nodiscard]] prevents ignoring errors</span>
+[[<span class="fn">nodiscard</span>]] <span class="ty">int</span> <span class="fn">compute</span>();
+<span class="cm">// warning if caller ignores return value</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-line"></div></div>
+
+  <!-- ==================== PHASE 5 ==================== -->
+  <div class="phase" data-level="5">
+    <div class="phase-header">
+      <div class="phase-num">05</div>
+      <div class="phase-meta">
+        <div class="phase-level">Phase 5 · Systems Level</div>
+        <div class="phase-title">Mastery & Real-World Systems</div>
+        <div class="phase-duration">Estimated time: <span>Ongoing</span></div>
+      </div>
+    </div>
+    <div class="topics-grid">
+
+      <div class="topic-card" style="--card-accent:#a8ff3e" data-id="t25">
+        <div class="card-header">
+          <div class="card-icon">💾</div>
+          <div class="card-info">
+            <div class="card-title">Systems Programming</div>
+            <div class="card-subtitle">OS API · Sockets · IPC · Assembly</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>POSIX API: fork, exec, wait, pipes, signals</li>
+            <li>File descriptors, mmap — memory-mapped files</li>
+            <li>BSD sockets: TCP/UDP server-client, select/poll/epoll</li>
+            <li>Inter-Process Communication: shared memory, message queues, semaphores</li>
+            <li>Inline assembly with asm — reading compiler output</li>
+            <li>Godbolt Compiler Explorer — examine generated assembly</li>
+            <li>System calls and the kernel/userspace boundary</li>
+            <li>Cross-platform portability: conditional compilation, abstraction layers</li>
+          </ul>
+          <div class="code-snippet"><span class="cm">// memory-mapped file I/O</span>
+<span class="ty">int</span> fd = <span class="fn">open</span>(<span class="str">"data.bin"</span>, O_RDONLY);
+<span class="ty">void</span>* mem = <span class="fn">mmap</span>(<span class="kw">nullptr</span>, size,
+  PROT_READ, MAP_PRIVATE, fd, <span class="num">0</span>);
+<span class="cm">// access file as if it's in memory</span>
+<span class="kw">auto</span> data = <span class="kw">static_cast</span>&lt;<span class="kw">const</span> <span class="ty">char</span>*&gt;(mem);
+<span class="fn">munmap</span>(mem, size); <span class="fn">close</span>(fd);</div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#a8ff3e" data-id="t26">
+        <div class="card-header">
+          <div class="card-icon">🏎️</div>
+          <div class="card-info">
+            <div class="card-title">Lock-Free Programming</div>
+            <div class="card-subtitle">Atomics · Memory Model · Wait-Free</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>The C++ memory model — sequentially consistent, total order</li>
+            <li>Acquire/release semantics — pairing load-acquire with store-release</li>
+            <li>Compare-and-swap (CAS): compare_exchange_strong / weak</li>
+            <li>Lock-free stack, lock-free queue — the ABA problem</li>
+            <li>Hazard pointers for safe memory reclamation</li>
+            <li>RCU (Read-Copy-Update) pattern</li>
+            <li>Wait-free vs lock-free vs obstruction-free guarantees</li>
+            <li>Practical: when is locking simpler and faster?</li>
+          </ul>
+          <div class="code-snippet"><span class="cm">// Lock-free push (simplified)</span>
+<span class="ty">std::atomic</span>&lt;<span class="ty">Node</span>*&gt; head{<span class="kw">nullptr</span>};
+
+<span class="ty">void</span> <span class="fn">push</span>(<span class="ty">int</span> val) {
+  <span class="kw">auto</span>* n = <span class="kw">new</span> <span class="ty">Node</span>{val};
+  n-&gt;next = head.<span class="fn">load</span>(std::memory_order_relaxed);
+  <span class="kw">while</span>(!head.<span class="fn">compare_exchange_weak</span>(
+    n-&gt;next, n,                   <span class="cm">// CAS loop</span>
+    std::memory_order_release));
+}</div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#a8ff3e" data-id="t27">
+        <div class="card-header">
+          <div class="card-icon">🧱</div>
+          <div class="card-info">
+            <div class="card-title">Build Systems & Package Management</div>
+            <div class="card-subtitle">CMake · Conan · vcpkg · Modules</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>Advanced CMake: targets, properties, generator expressions</li>
+            <li>Modern CMake: target_link_libraries with INTERFACE/PUBLIC/PRIVATE</li>
+            <li>ExternalProject_Add and FetchContent</li>
+            <li>Conan package manager: conanfile.txt, profiles, remotes</li>
+            <li>vcpkg: manifest mode, triplets, custom ports</li>
+            <li>C++20 Modules: import std; — the future of includes</li>
+            <li>Header-only vs compiled libraries trade-offs</li>
+            <li>CI/CD integration: GitHub Actions with C++ builds</li>
+          </ul>
+          <div class="code-snippet"><span class="cm"># Modern CMake target-based</span>
+<span class="fn">add_library</span>(mylib src/foo.cpp)
+<span class="fn">target_include_directories</span>(mylib
+  PUBLIC include/)
+<span class="fn">target_compile_features</span>(mylib
+  PUBLIC cxx_std_20)
+
+<span class="cm"># C++20 module</span>
+<span class="kw">import</span> std;            <span class="cm">// no more #include!</span>
+<span class="kw">export module</span> mymath;  <span class="cm">// your module</span></div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#a8ff3e" data-id="t28">
+        <div class="card-header">
+          <div class="card-icon">🔌</div>
+          <div class="card-info">
+            <div class="card-title">C Interop & Embedding</div>
+            <div class="card-subtitle">extern "C" · Python · Rust · WASM</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>extern "C" — C linkage, name mangling explained</li>
+            <li>Calling C from C++ and C++ from C — ABI compatibility</li>
+            <li>Python C extension modules (Python.h API)</li>
+            <li>pybind11 and nanobind — modern C++/Python bindings</li>
+            <li>Rust FFI with C-compatible interfaces</li>
+            <li>WebAssembly: Emscripten, compiling C++ to WASM</li>
+            <li>JNI — calling C++ from Java/Android</li>
+          </ul>
+          <div class="code-snippet"><span class="cm">// Export C interface from C++</span>
+<span class="kw">extern</span> <span class="str">"C"</span> {
+  <span class="ty">int</span> <span class="fn">my_add</span>(<span class="ty">int</span> a, <span class="ty">int</span> b) { <span class="kw">return</span> a+b; }
+}
+
+<span class="cm">// pybind11 binding</span>
+PYBIND11_MODULE(mymod, m) {
+  m.<span class="fn">def</span>(<span class="str">"add"</span>, &amp;my_add, <span class="str">"Add two ints"</span>);
+}</div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#a8ff3e" data-id="t29">
+        <div class="card-header">
+          <div class="card-icon">🎮</div>
+          <div class="card-info">
+            <div class="card-title">Real-World Domains</div>
+            <div class="card-subtitle">Games · Embedded · Finance · HPC</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>Game dev: entity-component systems (ECS), game loops, physics</li>
+            <li>Embedded: bare-metal C++, no exceptions, no heap, volatile</li>
+            <li>High-frequency trading: nanosecond latency, kernel bypass, DPDK</li>
+            <li>Scientific/HPC: BLAS, OpenMP for parallelism, MPI for distributed</li>
+            <li>Graphics: OpenGL/Vulkan/DirectX pipeline basics</li>
+            <li>Audio: real-time audio constraints, lock-free audio buffers</li>
+            <li>Networking: ASIO async I/O, HTTP/2, gRPC with C++</li>
+          </ul>
+          <div class="code-snippet"><span class="cm">// ECS — Data-Oriented Game Loop</span>
+<span class="kw">struct</span> <span class="ty">Position</span> { <span class="ty">float</span> x, y; };
+<span class="kw">struct</span> <span class="ty">Velocity</span> { <span class="ty">float</span> dx, dy; };
+
+<span class="kw">void</span> <span class="fn">moveSystem</span>(<span class="ty">std::span</span>&lt;<span class="ty">Position</span>&gt; pos,
+               <span class="ty">std::span</span>&lt;<span class="ty">Velocity</span>&gt; vel, <span class="ty">float</span> dt) {
+  <span class="kw">for</span> (<span class="ty">size_t</span> i=<span class="num">0</span>; i&lt;pos.<span class="fn">size</span>(); ++i) {
+    pos[i].x += vel[i].dx * dt;
+    pos[i].y += vel[i].dy * dt;
+  }
+}</div>
+        </div>
+      </div>
+
+      <div class="topic-card" style="--card-accent:#a8ff3e" data-id="t30">
+        <div class="card-header">
+          <div class="card-icon">📖</div>
+          <div class="card-info">
+            <div class="card-title">Testing & Tooling</div>
+            <div class="card-subtitle">GTest · Catch2 · Fuzzing · Clang-Tidy</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-divider"></div>
+          <ul class="subtopics">
+            <li>Google Test (gtest): TEST, TEST_F, EXPECT_*, ASSERT_*</li>
+            <li>Catch2 — modern single-header testing framework</li>
+            <li>Test-Driven Development (TDD) workflow in C++</li>
+            <li>Google Benchmark — micro-benchmarks, avoiding dead code elimination</li>
+            <li>Fuzzing with libFuzzer and AFL++ — finding edge cases automatically</li>
+            <li>clang-tidy — modernize, readability, bugprone checks</li>
+            <li>include-what-you-use (IWYU) — clean includes</li>
+            <li>Documentation: Doxygen, Sphinx with breathe extension</li>
+          </ul>
+          <div class="code-snippet"><span class="cm">// Google Test example</span>
+<span class="fn">TEST</span>(MathTest, AddPositive) {
+  <span class="fn">EXPECT_EQ</span>(<span class="fn">add</span>(<span class="num">2</span>, <span class="num">3</span>), <span class="num">5</span>);
+  <span class="fn">EXPECT_GT</span>(<span class="fn">add</span>(<span class="num">1</span>, <span class="num">1</span>), <span class="num">0</span>);
+}
+
+<span class="cm">// libFuzzer target</span>
+<span class="kw">extern</span> <span class="str">"C"</span> <span class="ty">int</span> <span class="fn">LLVMFuzzerTestOneInput</span>(
+    <span class="kw">const</span> <span class="ty">uint8_t</span>* data, <span class="ty">size_t</span> size) {
+  <span class="fn">parse</span>({(<span class="kw">const</span> <span class="ty">char</span>*)data, size});
+  <span class="kw">return</span> <span class="num">0</span>;
+}</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end container -->
+
+<script>
+// ==================== STATE ====================
+const STORAGE_KEY = 'cpp_roadmap_done';
+let done = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+const totalCards = document.querySelectorAll('.topic-card').length;
+
+// ==================== INIT ====================
+function init() {
+  // restore checkmarks
+  done.forEach(id => markDone(id, false));
+  updateProgress();
+
+  // intersection observer for phase animations
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.phase').forEach(p => observer.observe(p));
+}
+
+// ==================== CLICK HANDLERS ====================
+document.querySelectorAll('.topic-card').forEach(card => {
+  const header = card.querySelector('.card-header');
+  const body = card.querySelector('.card-body');
+  const check = card.querySelector('.card-check');
+  const id = card.dataset.id;
+
+  // toggle expand on header (but not check)
+  header.addEventListener('click', e => {
+    if (e.target.closest('.card-check')) return;
+    body.classList.toggle('open');
+  });
+
+  // check toggle
+  check.addEventListener('click', e => {
+    e.stopPropagation();
+    if (done.has(id)) {
+      done.delete(id);
+      card.classList.remove('done');
+    } else {
+      done.add(id);
+      card.classList.add('done');
+      body.classList.remove('open'); // collapse on check
+    }
+    save();
+    updateProgress();
+  });
+});
+
+// ==================== PROGRESS ====================
+function markDone(id, animate) {
+  const card = document.querySelector(`[data-id="${id}"]`);
+  if (card) card.classList.add('done');
+}
+
+function updateProgress() {
+  const pct = Math.round((done.size / totalCards) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('pct-done').textContent = pct + '%';
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify([...done]));
+}
+
+// ==================== SCROLL PROGRESS ====================
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scrolled = doc.scrollTop;
+  const total = doc.scrollHeight - doc.clientHeight;
+  // optional: could update a scroll progress separately
+}, { passive: true });
+
+init();
+</script>
+</body>
+</html>
